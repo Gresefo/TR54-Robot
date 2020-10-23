@@ -18,18 +18,35 @@ import sys
 
 from motorControl import motorControl 
 from leader import leader
-from follower import follower
+from Follower import Follower
 from captorDistance import captorDistance
 from RobotState import RobotState
+
+from pybricks.tools import DataLog, StopWatch, wait
 # This program requires LEGO EV3 MicroPython v2.0 or higher.
 # Click "Open user guide" on the EV3 extension tab for more information.
+
+
+
+
+
+
+
+
+#for record in records:
+    #data.log(record['id'],record['firstname'])
+
+
 
 
 # Create your objects here.
 ev3 = EV3Brick()
 
-state = RobotState()
-follower = follower(state)
+#state = RobotState("all_or_nothing_follow")
+#state = RobotState("up_to_point_follow")
+state = RobotState("two_points_follow")
+
+follower = Follower(state)
 
 #l = leader(1000)
 

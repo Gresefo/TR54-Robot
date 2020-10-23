@@ -21,11 +21,12 @@ import csv
 
 from motorControl import motorControl
 from captorDistance import captorDistance
+from pybricks.tools import DataLog, StopWatch, wait
 
 # This program requires LEGO EV3 MicroPython v2.0 or higher.
 # Click "Open user guide" on the EV3 extension tab for more information.
 
-class follower:
+class Follower:
     def __init__(self,state) :
         self.motorControl = motorControl(state)
         self.state = state
@@ -41,16 +42,20 @@ class follower:
             dist = self.cd.getDistance()
             if(dist >= 30):
                 self.motorControl.forwardDrive(50)
+                self.state.logger.log(dist,50)
             else:
                 self.motorControl.stop()
+                self.state.logger.log(dist,0)
 
             print(dist)
+            
 
         return
 
     def up_to_point_follow(self) :
         a = 2
-        d = 30
+        d = 15
+        self.state.logger.log("a:"+str(a)+",d="+str(d))
         while(True):
             wait(100)
             dist = self.cd.getDistance()
@@ -58,14 +63,16 @@ class follower:
             self.motorControl.forwardDrive(percent)
             #self.writeEXCEL('A1')
             print(dist , ";",percent)
+            self.state.logger.log(dist,percent)
         return
     
     def two_points_follow(self):
         prev_v = 0
         af = 2
-        aa = 5
+        aa = 3
         df = 30
         da = 50
+        self.state.logger.log("af="+str(af)+",aa="+str(aa)+",df="+str(df)+",da="+str(da))
         while(True):
             wait(100)
             dist = self.cd.getDistance()
@@ -75,6 +82,7 @@ class follower:
             self.motorControl.forwardDrive(percent)
             prev_v = percent
             print(dist , ";",percent)
+            self.state.logger.log(dist,percent)
         return
 
     def writeEXCEL(self,cell):

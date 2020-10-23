@@ -1,8 +1,9 @@
 from pybricks.ev3devices import Motor
 from pybricks.parameters import Port
 
-class robotState:
-    def __init__(self):
+from pybricks.tools import DataLog, StopWatch, wait
+class RobotState:
+    def __init__(self,logger_desc,nb_calibrage_classe):
         self.maxSpeed = 200 #mm
         self.maxdist = 2 #meters
         self.speed = 360
@@ -14,6 +15,12 @@ class robotState:
 
         self.dist = 0
         self.color = [0,0,0]
+
+
+
+
+
+        self.logger = DataLog("Dist","Vitesse",name="log_test_"+logger_desc,timestamp=True,extension='txt',append=False)
     
     def follow_start(self) : 
         return
