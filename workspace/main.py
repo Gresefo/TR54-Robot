@@ -18,7 +18,7 @@ import sys
 
 from motorControl import motorControl 
 from leader import leader
-from Follower import Follower
+from follower import follower
 from captorDistance import captorDistance
 from RobotState import RobotState
 # This program requires LEGO EV3 MicroPython v2.0 or higher.
@@ -29,7 +29,7 @@ from RobotState import RobotState
 ev3 = EV3Brick()
 
 state = RobotState()
-follower = Follower(state)
+follower = follower(state)
 
 #l = leader(1000)
 

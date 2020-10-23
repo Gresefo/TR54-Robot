@@ -1,7 +1,7 @@
 from pybricks.ev3devices import Motor
 from pybricks.parameters import Port
 
-class RobotState:
+class robotState:
     def __init__(self):
         self.maxSpeed = 200 #mm
         self.maxdist = 2 #meters

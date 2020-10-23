@@ -4,25 +4,30 @@ from pybricks.ev3devices import (Motor, TouchSensor, ColorSensor,
 from pybricks.parameters import Port, Stop, Direction, Button, Color
 from pybricks.tools import wait, StopWatch, DataLog
 from pybricks.robotics import DriveBase
-from pybricks.media.ev3dev import SoundFile, ImageFile
 
 from pybricks.hubs import EV3Brick
 from pybricks.ev3devices import Motor
 from pybricks.parameters import Port
 
-from pybricks.robotics import DriveBase
-
 import math
 
 
 from pybricks.tools import wait
-from RobotState import RobotState
+from robotState import robotState
 import sys
 
 class motorControl:
     def __init__(self,state):
         """
             Constructor
+
+            We need :
+                1 robotState (state) : This robotState is the common class shared between many classes. It contains many data about the robot.
+
+            We define :
+                2 Motors (left & right) : Both connected to the robots correct Port.
+                1 robotState (state) : It contains many data about the robot and his status.
+                1 DriveBase (db) : It allows to run both motor at egal speed (using forwardDrive method)
         """       
         self.motor_left = Motor(Port.B)
         self.motor_right = Motor(Port.C)
@@ -49,7 +54,7 @@ class motorControl:
 
         return
 
-    def forwardDrive(self,percent):
+    def forwardDrive(self,percent): 
         speed = self.state.maxSpeed * percent / 100
         self.db.drive(speed,0)
         return
