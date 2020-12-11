@@ -23,7 +23,8 @@ class twoWheelsController:
         self._drive_base = DriveBase(self._motor_left,self._motor_right,wheelDiameter,axeDiameter)
 
         #internal variable to determine wich segment the robot is on currently
-        self.prev_steering = numpy.zeros(shape = (20))
+        #self.prev_steering = numpy.zeros(shape = (20))
+        self.prev_steering = [0]*20
         self.location = 0
         self.steering_treshold = steering_treshold
         self.current_action = ['going_straight','turning_left','turning_right']
@@ -39,7 +40,9 @@ class twoWheelsController:
         apply_steering = min(self._max_steering, max(self._min_steering, steering))
         apply_speed = min(self._max_speed, max(self._min_speed, speed))
 
-        self.prev_steering = np.append([apply_steering], self.prev_steering[0:-1])
+        #self.prev_steering = np.append([apply_steering], self.prev_steering[0:-1])
+        self.prev_steering.pop(0)
+        self.prev_steering.append(apply_steering)
         self.update_location()
 
         
@@ -51,8 +54,9 @@ class twoWheelsController:
         self._drive_base.drive(0,0)
 
     def update_location(self):
-        steering_mean = numpy.mean(self.prev_steering)
-        
+        #steering_mean = numpy.mean(self.prev_steering)
+        steering_mean = sum(self.prev_steering)/len(self.prev_steering)
+
         if steering_mean>self.steering_treshold:
             if self.location != 1:
                 print(self.current_action[self.location])

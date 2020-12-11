@@ -10,6 +10,8 @@ class robot:
         self._controller = controller_component
         self._driver = driver_component
 
+        self.location = 0
+
     def drive(self, delta_time):
         """
         Drives the robot according to the given delta time.
@@ -17,6 +19,7 @@ class robot:
         """
         self._driver.update(delta_time)
         self._controller.drive(self._driver.get_steering(),self._driver.get_speed())
+        self.location = self._controller.location
 
     def stop(self):
         """
