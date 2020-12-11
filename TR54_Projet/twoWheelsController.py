@@ -1,9 +1,10 @@
 from pybricks.robotics import DriveBase
 from pybricks.ev3devices import Motor
+import numpy
 
 class twoWheelsController:
 
-    def __init__(self, left_motor_output, right_motor_output, min_steering, max_steering, min_speed, max_speed, wheelDiameter, axeDiameter):
+    def __init__(self, left_motor_output, right_motor_output, min_steering, max_steering, min_speed, max_speed, wheelDiameter, axeDiameter, steering_treshold=10):
         """
         Initializes a controller with two wheels.
         :param left_motor_output: the output pin for the left motor
@@ -21,6 +22,14 @@ class twoWheelsController:
         self._motor_right = Motor(right_motor_output)
         self._drive_base = DriveBase(self._motor_left,self._motor_right,wheelDiameter,axeDiameter)
 
+        #internal variable to determine wich segment the robot is on currently
+        self.prev_steering = numpy.zeros(shape = (20))
+        self.location = 0
+        self.steering_treshold = steering_treshold
+        self.current_action = ['going_straight','turning_left','turning_right']
+
+
+
     def drive(self, steering, speed):
         """
         Drives using the given steering and speed limited to defined bounds.
@@ -29,8 +38,32 @@ class twoWheelsController:
         """
         apply_steering = min(self._max_steering, max(self._min_steering, steering))
         apply_speed = min(self._max_speed, max(self._min_speed, speed))
+
+        self.prev_steering = np.append([apply_steering], self.prev_steering[0:-1])
+        self.update_location()
+
+        
+
         self._drive_base.drive(apply_speed,apply_steering)
 
     def stop(self):
         """ Stops moving. """
         self._drive_base.drive(0,0)
+
+    def update_location(self):
+        steering_mean = numpy.mean(self.prev_steering)
+        
+        if steering_mean>self.steering_treshold:
+            if self.location != 1:
+                print(self.current_action[self.location])
+                self.location=1
+        elif steering_mean< -self.steering_treshold:
+            if self.location != 2:
+                print(self.current_action[self.location])
+                self.location=2
+        else:
+            if self.location != 0:
+                print(self.current_action[self.location])
+                self.location=0
+
+    
