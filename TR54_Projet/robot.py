@@ -26,9 +26,10 @@ class robot:
         Drives the robot according to the given delta time.
         :param delta_time: the delta time in seconds.
         """
-        self._driver.update(delta_time)
+        
 
         if(self.allowed):
+            self._driver.update(delta_time)
             self._controller.drive(self._driver.get_steering(),self._driver.get_speed())
             
             new_action = self._controller.action
