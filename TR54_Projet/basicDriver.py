@@ -32,12 +32,11 @@ class basicDriver:
         print("desired speed",self._desired_speed)
         distance_error = self._distance_sensor_component.read_distance() - self._desired_obstacle_distance
         if self._steering_component is not None:
-            self._steering = self._steering_component.compute(direction_error, delta_time) * 3.6
+            self._steering = self._steering_component.compute(direction_error, delta_time)
             print("steering:",self._steering)
             #self._steering = self._steering*50/30
         if self._speed_component is not None:
             self._speed = self._speed_component.compute(distance_error, delta_time)
-            print()
             print("speed",self._speed)
             #self._speed = self._speed
 

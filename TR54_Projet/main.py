@@ -15,6 +15,8 @@ from colorSensor import *
 from distanceSensor import *
 from robot import *
 
+from subscriber import *
+
 MIN_DELTA_TIME = 0.1
 
 OUTPUT_A = Port.B
@@ -57,7 +59,7 @@ while True:
 
     # Sleeps to force respecting the min delta time
     #sleep(sleep_time)
-    wait(sleep_time)
+    time.sleep(sleep_time)
 
     # Updates info
     current_time = time.time()
