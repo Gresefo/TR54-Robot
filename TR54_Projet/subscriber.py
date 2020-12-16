@@ -1,13 +1,17 @@
 from pybricks import ev3brick as brick
-
-import threading
-
 from umqtt.robust import MQTTClient
+import threading
 import time
 
 class subscriber(threading.Thread):
+    """Thread to listen to the MQQT messages"""
 
     def getmessages(self,topic,msg):
+        """
+        Gets the message froma topic
+        :param topic: the topic to listen
+        :param msg: the message to get
+        """
         #print(type(topic))
         #print(type(self._topic))
         #topic = getTopicFromId(self, s)
@@ -39,6 +43,13 @@ class subscriber(threading.Thread):
                 
 
     def __init__(self,ip,id,topic,robot):
+        """
+        Constructor
+        :param ip: the IP adresse to connect
+        :param id: the robot ID (1, 2 or 3)
+        :param topic: the topic to listen
+        :param robot: the current robot
+        """
         threading.Thread.__init__(self)
         self._client = MQTTClient(id,ip)
         self._client.connect()
@@ -46,10 +57,13 @@ class subscriber(threading.Thread):
         self._client.subscribe(topic)
         self._topic = topic
         self.id = id
-
         self.robot = robot
 
+
     def run(self):
+        """
+        The run function for the thread
+        """
         self._client.publish(self._topic,'Listening')
         brick.display.text('Listening...')
         while True:

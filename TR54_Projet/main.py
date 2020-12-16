@@ -1,10 +1,6 @@
 #!/usr/bin/env pybricks-micropython
 
 from pybricks.parameters import Port
-
-AXE_DIAMETER = 186 #mm
-WHEEL_DIAMETER = 35 #mm
-
 import time
 from pybricks.tools import wait
 
@@ -15,19 +11,25 @@ from basicOnePointComponent import *
 from colorSensor import *
 from distanceSensor import *
 from robot import *
-
 from subscriber import *
 from publisher import *
 
-MIN_DELTA_TIME = 0.1
+"""
+Global variables
+"""
+AXE_DIAMETER = 186 #mm
+WHEEL_DIAMETER = 35 #mm
+MIN_DELTA_TIME = 0.1 #s
 
 OUTPUT_A = Port.B
 OUTPUT_B = Port.C
 INPUT_1 = Port.S3
 INPUT_2 = Port.S2
 
-IP = "192.168.43.93"
-ID = "2"
+IP = "192.168.43.93" #IP adresse to connect to get the MQQT broker
+ID = "2" #The ID of this robot
+
+
 
 
 print("start")

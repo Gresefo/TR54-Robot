@@ -3,8 +3,10 @@ from pybricks.ev3devices import Motor
 
 
 class twoWheelsController:
+    """Two wheels controller, moves the wheels"""
 
-    def __init__(self, left_motor_output, right_motor_output, min_steering, max_steering, min_speed, max_speed, wheelDiameter, axeDiameter, steering_treshold=23,prev_steering_size=25):
+    def __init__(self, left_motor_output, right_motor_output, min_steering, max_steering, min_speed, max_speed,
+     wheelDiameter, axeDiameter, steering_treshold=23,prev_steering_size=25):
         """
         Initializes a controller with two wheels.
         :param left_motor_output: the output pin for the left motor
@@ -13,6 +15,10 @@ class twoWheelsController:
         :param max_steering: the maximum steering in [-100; 100]
         :param min_speed: the minimum speed in [-100; 100]
         :param max_speed: the maximum speed in [-100; 100]
+        :param wheelDiameter: the wheels diameter
+        :param axeDiameter: the axe diameter
+        :param steering_treshold: the limite to consider if the average of streering is above or bellow, to know if the robot is turning
+        :param prev_streeing_size: the size of the array registering the wheels rotation
         """
         self._max_steering = max_steering
         self._min_steering = min_steering
@@ -44,16 +50,16 @@ class twoWheelsController:
         self.prev_steering.pop(0)
         self.prev_steering.append(apply_steering)
         self.update_action()
-
-        
-
         self._drive_base.drive(apply_speed,apply_steering)
+
 
     def stop(self):
         """ Stops moving. """
         self._drive_base.drive(0,0)
 
+
     def update_action(self):
+        """Indicates which action is doing the robot, turning left, turning right, or going forward"""
         #steering_mean = numpy.mean(self.prev_steering)
         steering_mean = sum(self.prev_steering)/len(self.prev_steering)
 

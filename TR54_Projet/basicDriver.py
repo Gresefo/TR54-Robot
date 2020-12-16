@@ -21,6 +21,7 @@ class basicDriver:
         self._steering = 0
         self._speed = desired_speed
 
+
     def update(self, delta_time):
         """
         Updates the driver decisions according to the current delta time.
@@ -36,12 +37,14 @@ class basicDriver:
             self._speed = self._speed_component.compute(distance_error, delta_time)
             #self._speed = self._speed
 
+
     def get_steering(self):
         """
         Returns the current steering.
         :return: the steering
         """
         return self._steering
+
 
     def get_speed(self):
         """
