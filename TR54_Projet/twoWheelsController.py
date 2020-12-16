@@ -4,7 +4,7 @@ from pybricks.ev3devices import Motor
 
 class twoWheelsController:
 
-    def __init__(self, left_motor_output, right_motor_output, min_steering, max_steering, min_speed, max_speed, wheelDiameter, axeDiameter, steering_treshold=10):
+    def __init__(self, left_motor_output, right_motor_output, min_steering, max_steering, min_speed, max_speed, wheelDiameter, axeDiameter, steering_treshold=23,prev_steering_size=25):
         """
         Initializes a controller with two wheels.
         :param left_motor_output: the output pin for the left motor
@@ -24,10 +24,10 @@ class twoWheelsController:
 
         #internal variable to determine wich segment the robot is on currently
         #self.prev_steering = numpy.zeros(shape = (20))
-        self.prev_steering = [0]*20
+        self.prev_steering = [0]*prev_steering_size
         self.action = 0
         self.steering_treshold = steering_treshold
-        self.current_action = ['going_straight','turning_left','turning_right']
+        self.current_action = ['going_straight','turning_right','turning_left']
 
 
 
@@ -59,17 +59,13 @@ class twoWheelsController:
 
         if steering_mean>self.steering_treshold:
             if self.action != 1:
-                print(self.current_action[self.action])
                 self.action=1
+                #print("controller",self.current_action[self.action])
         elif steering_mean< -self.steering_treshold:
             if self.action != 2:
-                print(self.current_action[self.action])
                 self.action=2
+                #print("controller",self.current_action[self.action])
         else:
             if self.action != 0:
-                print(self.current_action[self.action])
                 self.action=0
-
-    
-
-    
+                #print("controller",self.current_action[self.action])

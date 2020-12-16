@@ -27,17 +27,13 @@ class basicDriver:
         :param delta_time: the current delta time in seconds
         """
         direction_error = self._color_sensor_component.read_intensity() - 30
-        print("error :",direction_error)
-        print("intensity : ",self._color_sensor_component.read_intensity())
-        print("desired speed",self._desired_speed)
         distance_error = self._distance_sensor_component.read_distance() - self._desired_obstacle_distance
         if self._steering_component is not None:
             self._steering = self._steering_component.compute(direction_error, delta_time)
-            print("steering:",self._steering)
+            #print("new steerin : ",self._steering)
             #self._steering = self._steering*50/30
         if self._speed_component is not None:
             self._speed = self._speed_component.compute(distance_error, delta_time)
-            print("speed",self._speed)
             #self._speed = self._speed
 
     def get_steering(self):

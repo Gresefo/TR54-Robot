@@ -8,8 +8,9 @@ import time
 class subscriber(threading.Thread):
 
     def getmessages(self,topic,msg):
-        print(type(topic))
-        print(type(self._topic))
+        #print(type(topic))
+        #print(type(self._topic))
+        #topic = getTopicFromId(self, s)
         if bytes(self._topic,'utf-8') == topic:
             brick.display.text(msg.decode('utf-8'))
             txt = msg.decode('utf-8')
@@ -38,4 +39,5 @@ class subscriber(threading.Thread):
         brick.display.text('Listening...')
         while True:
             self._client.check_msg()
-            time.sleep(0.1)
+            time.sleep(1)
+    

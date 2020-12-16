@@ -29,4 +29,4 @@ class basicPIDComponent:
         p = self._kp * error
         i = self._ki * self._sum_error * delta_time
         d = self._kd * (self._delta_error / delta_time)
-        return p + i + d
+        return (p + i + d)*3.6

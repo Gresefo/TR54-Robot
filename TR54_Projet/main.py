@@ -11,11 +11,13 @@ from pybricks.tools import wait
 from twoWheelsController import *
 from basicDriver import *
 from basicPIDComponent import *
+from basicOnePointComponent import *
 from colorSensor import *
 from distanceSensor import *
 from robot import *
 
 from subscriber import *
+from publisher import *
 
 MIN_DELTA_TIME = 0.1
 
@@ -24,39 +26,57 @@ OUTPUT_B = Port.C
 INPUT_1 = Port.S3
 INPUT_2 = Port.S2
 
+IP = "192.168.43.93"
+ID = "2"
+
+
+print("start")
+
+publisher_speed = publisher(ip=IP,id=ID,s="vitesse",delta_time=0.5)
+publisher_action = publisher(ip=IP,id=ID,s="action",delta_time=1)
+publisher_position = publisher(ip=IP,id=ID,s="position",delta_time=0.25)
+
+
 robot = robot(
     controller_component=twoWheelsController(
         left_motor_output=OUTPUT_A, right_motor_output=OUTPUT_B,
         min_steering=-360, max_steering=360,
-        min_speed=0, max_speed=100,
+        min_speed=0, max_speed=200,
         wheelDiameter=WHEEL_DIAMETER, axeDiameter=AXE_DIAMETER
     ),
     driver_component=basicDriver(
-        steering_component=basicPIDComponent(kp=0.4, ki=0.4, kd=0.01),
-        speed_component=basicPIDComponent(kp=0.4, ki=0.4, kd=0.01),
+        steering_component=basicPIDComponent(kp=0.31, ki=0.25, kd=0.00225),
+        speed_component=basicOnePointComponent(acceleration=2.1,max_speed=150),
         color_sensor_component=colorSensor(sensor_input=INPUT_1),
         distance_sensor_component=distanceSensor(sensor_input=INPUT_2),
-        desired_obstacle_distance=15,
+        desired_obstacle_distance=30,
         desired_speed=100
     )
 )
 
+subscriber = subscriber(ip=IP,id=ID,topic="TR54/g3/r1/action",robot=robot)
 
 start_time = time.time()
 last_time = start_time
 last_delta_time = MIN_DELTA_TIME
 count = 0
 
+publisher_speed.start()
+publisher_position.start()
+publisher_action.start()
+
+#subscriber.start()
+
 while True:
     # Drives the robot
     robot.drive(last_delta_time)
-
     # Computes the time used to execute the drive method
     drive_time = time.time() - last_time
-
+    publisher_speed.setMessage(str(int(robot.get_driver().get_speed())))
+    publisher_position.setMessage(robot._map[robot.map_location][0])
+    publisher_action.setMessage(robot._controller.current_action[robot._controller.action])
     # Computes the necessary time to sleep to fix delta time
     sleep_time = max(0.0, MIN_DELTA_TIME - drive_time)
-
     # Sleeps to force respecting the min delta time
     #sleep(sleep_time)
     time.sleep(sleep_time)

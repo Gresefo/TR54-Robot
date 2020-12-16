@@ -11,13 +11,15 @@ class robot:
         self._driver = driver_component
 
         #variables pour localiser le robot
-        self._map = [['A',0],['B',2],['C',0],['D',1],['E',0],['F',1],['G',0],['H';2]]
+        self._map = [['A',0],['B',1],['C',0],['D',2],['E',0],['F',2],['G',0],['H',1]]
         self.map_location = init_map_location
         self.action = self._map[self.map_location][1]
         self._controller.action = self.action
 
         #variables pour la gestion des messages MQTT
         self.allowed = True
+
+        #
 
         
 
@@ -34,9 +36,10 @@ class robot:
             
             new_action = self._controller.action
             if(self.action != new_action):
-                predicted_action = self._map[(self.map_location+1)%len(self.map_location)][1]
+                predicted_action = self._map[(self.map_location+1)%len(self._map)][1]
                 if(new_action == predicted_action):
-                    self.map_location = self.map_location+1
+                    self.map_location = (self.map_location+1)%len(self._map)
+                    #print(self._map[self.map_location][0])
                     #publish self._map[self.map_location][0]
                 else:
                     print("wrong action predicted, not forwarded to map location")
