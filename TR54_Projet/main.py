@@ -35,6 +35,7 @@ print("start")
 publisher_speed = publisher(ip=IP,id=ID,s="vitesse",delta_time=0.5)
 publisher_action = publisher(ip=IP,id=ID,s="action",delta_time=1)
 publisher_position = publisher(ip=IP,id=ID,s="position",delta_time=0.25)
+publisher_fifo = publisher(ip=IP,id="",s="listFIFO",delta_time=0.25)
 
 
 robot = robot(
@@ -54,7 +55,7 @@ robot = robot(
     )
 )
 
-subscriber = subscriber(ip=IP,id=ID,topic="TR54/g3/r1/action",robot=robot)
+subscriber = subscriber(ip=IP,id=ID,topic="TR54/g3/listFIFO",robot=robot)
 
 start_time = time.time()
 last_time = start_time
@@ -75,6 +76,11 @@ while True:
     publisher_speed.setMessage(str(int(robot.get_driver().get_speed())))
     publisher_position.setMessage(robot._map[robot.map_location][0])
     publisher_action.setMessage(robot._controller.current_action[robot._controller.action])
+    if(robot._map[robot.map_location][0]=='G' || robot._map[robot.map_location][0]=='C'):
+        robot.allowed = False
+        publisher_fifo.setMessage(ID)
+    elif(robot._map[robot.map_location][0]=='H' || robot._map[robot.map_location][0]=='D'):
+        publisher_fifo.setMessage(ID)
     # Computes the necessary time to sleep to fix delta time
     sleep_time = max(0.0, MIN_DELTA_TIME - drive_time)
     # Sleeps to force respecting the min delta time

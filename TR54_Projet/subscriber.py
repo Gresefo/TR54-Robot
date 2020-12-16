@@ -14,14 +14,28 @@ class subscriber(threading.Thread):
         if bytes(self._topic,'utf-8') == topic:
             brick.display.text(msg.decode('utf-8'))
             txt = msg.decode('utf-8')
-            print(msg.decode('utf-8'))
-            splt = txt.split('|')
-            if(len(splt) >1 ):
-                print(splt[1])
-            if(splt[0]=="stop"):
+            #print(msg.decode('utf-8'))
+            #splt = txt.split('|')
+            #if(len(splt) >1 ):
+            #    print(splt[1])
+            """if(splt[0]=="stop"):
                 self.robot.allowed = False
             elif(splt[0]=="go"):
-                self.robot.allowed = True
+                self.robot.allowed = True"""
+            cur_id = int(txt)
+            isWaiting = False
+            for robot_id in robot.waiting_list:
+                if(robot_id == cur_id):
+                    isWaiting = True
+            if(not(isWaiting)):
+                robot.waiting_list.append(cur_id)
+            else:
+                robot.waiting_list.pop(0)
+            
+            if(robot.waiting_list[0]==self.id):
+                robot.allowed=True
+
+            
                 
 
     def __init__(self,ip,id,topic,robot):
@@ -31,6 +45,7 @@ class subscriber(threading.Thread):
         self._client.set_callback(self.getmessages)
         self._client.subscribe(topic)
         self._topic = topic
+        self.id = id
 
         self.robot = robot
 

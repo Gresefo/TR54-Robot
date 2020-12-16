@@ -19,7 +19,8 @@ class robot:
         #variables pour la gestion des messages MQTT
         self.allowed = True
 
-        #
+        #variable pour l'ordonnancement
+        self.waiting_list = []
 
         
 
