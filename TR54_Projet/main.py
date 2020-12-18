@@ -42,7 +42,7 @@ print("start")
 publisher_speed = publisher(ip=IP,id=ID,s="vitesse",delta_time=1)
 publisher_action = publisher(ip=IP,id=ID,s="action",delta_time=1)
 publisher_position = publisher(ip=IP,id=ID,s="position",delta_time=0.25)
-publisher_fifo = fifoPublisher(ip=IP,id=ID,s="listFIFO",delta_time=1)
+publisher_fifo = fifoPublisher(ip=IP,id=ID)
 
 
 robot = robot(
@@ -72,7 +72,6 @@ count = 0
 publisher_speed.start()
 publisher_position.start()
 publisher_action.start()
-publisher_fifo.start()
 
 subscriber.start()
 
@@ -90,11 +89,12 @@ while True:
         if(robot.intersection==0):
             robot.intersection=1
             robot.allowed = False
-            publisher_fifo.setMessage(ID)
+            print('test')
+            publisher_fifo.fifoPublish(ID)
     elif(robot._map[robot.map_location][0]=='H' or robot._map[robot.map_location][0]=='D'):
         if(robot.intersection == 1):
             robot.intersection=2
-            publisher_fifo.setMessage(ID)
+            publisher_fifo.fifoPublish(ID)
     else:
         robot.intersection = 0
     # Computes the necessary time to sleep to fix delta time
