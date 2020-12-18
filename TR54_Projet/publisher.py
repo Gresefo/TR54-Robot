@@ -18,13 +18,9 @@ class publisher(threading.Thread):
         threading.Thread.__init__(self)
         self._client = MQTTClient(id,ip)
         self._client.connect()
-        if(id !== ""):
-            self._topic = "TR54/g3/r" + id +"/" + s
-        else:
-            self._topic = "TR54/g3/" + s
+        self._topic = "TR54/g3/r" + id +"/" + s
         self._msg = ""
         self._delta_time = delta_time
-
 
     def setMessage(self, msg):
         """

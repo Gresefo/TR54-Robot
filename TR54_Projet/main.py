@@ -14,6 +14,11 @@ from robot import *
 from subscriber import *
 from publisher import *
 
+from fifoPublisher import *
+
+import ubinascii
+import machine
+
 """
 Global variables
 """
@@ -34,10 +39,10 @@ ID = "2" #The ID of this robot
 
 print("start")
 
-publisher_speed = publisher(ip=IP,id=ID,s="vitesse",delta_time=0.5)
+publisher_speed = publisher(ip=IP,id=ID,s="vitesse",delta_time=1)
 publisher_action = publisher(ip=IP,id=ID,s="action",delta_time=1)
 publisher_position = publisher(ip=IP,id=ID,s="position",delta_time=0.25)
-publisher_fifo = publisher(ip=IP,id="",s="listFIFO",delta_time=0.25)
+publisher_fifo = fifoPublisher(ip=IP,id=ID,s="listFIFO",delta_time=1)
 
 
 robot = robot(
@@ -57,7 +62,7 @@ robot = robot(
     )
 )
 
-subscriber = subscriber(ip=IP,id=ID,topic="TR54/g3/listFIFO",robot=robot)
+subscriber = subscriber(ip=IP,id=ID,topic=b"TR54/g3/listFIFO",robot=robot)
 
 start_time = time.time()
 last_time = start_time
@@ -67,22 +72,31 @@ count = 0
 publisher_speed.start()
 publisher_position.start()
 publisher_action.start()
+publisher_fifo.start()
 
-#subscriber.start()
+subscriber.start()
 
 while True:
     # Drives the robot
     robot.drive(last_delta_time)
+
+
     # Computes the time used to execute the drive method
     drive_time = time.time() - last_time
     publisher_speed.setMessage(str(int(robot.get_driver().get_speed())))
     publisher_position.setMessage(robot._map[robot.map_location][0])
     publisher_action.setMessage(robot._controller.current_action[robot._controller.action])
-    if(robot._map[robot.map_location][0]=='G' || robot._map[robot.map_location][0]=='C'):
-        robot.allowed = False
-        publisher_fifo.setMessage(ID)
-    elif(robot._map[robot.map_location][0]=='H' || robot._map[robot.map_location][0]=='D'):
-        publisher_fifo.setMessage(ID)
+    if(robot._map[robot.map_location][0]=='G' or robot._map[robot.map_location][0]=='C'):
+        if(robot.intersection==0):
+            robot.intersection=1
+            robot.allowed = False
+            publisher_fifo.setMessage(ID)
+    elif(robot._map[robot.map_location][0]=='H' or robot._map[robot.map_location][0]=='D'):
+        if(robot.intersection == 1):
+            robot.intersection=2
+            publisher_fifo.setMessage(ID)
+    else:
+        robot.intersection = 0
     # Computes the necessary time to sleep to fix delta time
     sleep_time = max(0.0, MIN_DELTA_TIME - drive_time)
     # Sleeps to force respecting the min delta time

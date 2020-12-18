@@ -12,16 +12,19 @@ class robot:
         self._driver = driver_component
 
         #variables pour localiser le robot
-        self._map = [['A',0],['B',1],['C',0],['D',2],['E',0],['F',2],['G',0],['H',1]]
+        #self._map = [['A',0],['B',1],['C',0],['D',2],['E',0],['F',2],['G',0],['H',1]]
+        self._map = [['A',90],['B',45],['C',45],['D',90],['E',45],['F',90],['G',45],['H',90]]
         self.map_location = init_map_location
         self.action = self._map[self.map_location][1]
         self._controller.action = self.action
+        self._recorded_angle = 0
 
         #variables pour la gestion des messages MQTT
         self.allowed = True
 
         #variable pour l'ordonnancement
         self.waiting_list = []
+        self.intersection = 0
 
         
 
@@ -34,19 +37,27 @@ class robot:
             self._driver.update(delta_time)
             self._controller.drive(self._driver.get_steering(),self._driver.get_speed())
             
-            new_action = self._controller.action
-            if(self.action != new_action):
-                predicted_action = self._map[(self.map_location+1)%len(self._map)][1]
-                if(new_action == predicted_action):
-                    self.map_location = (self.map_location+1)%len(self._map)
-                    #print(self._map[self.map_location][0])
-                    #publish self._map[self.map_location][0]
-                else:
-                    print("wrong action predicted, not forwarded to map location")
+            # "new_action = self._controller.action"
+            # if(self.action != new_action):
+            #     predicted_action = self._map[(self.map_location+1)%len(self._map)][1]
+            #     if(new_action == predicted_action):
+            #         self.map_location = (self.map_location+1)%len(self._map)
+            #         #print(self._map[self.map_location][0])
+            #         #publish self._map[self.map_location][0]
+            #     else:
+            #         print("wrong action predicted, not forwarded to map location")
+            # print(self._controller.current_angle - self._recorded_angle)
+            if(abs(self._controller.current_angle - self._recorded_angle) > self._map[self.map_location][1]):
+                self._recorded_angle = self._controller.current_angle
+                self.map_location = (self.map_location+1)%len(self._map)
+                print(self._map[self.map_location][0])
+                
+                
+
 
             self.action = self._controller.action
         else:
-            self.robot.stop()
+            self.stop()
 
 
     def stop(self):
