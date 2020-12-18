@@ -15,32 +15,31 @@ class subscriber(threading.Thread):
         #print(type(topic))
         #print(type(self._topic))
         #topic = getTopicFromId(self, s)
-        txt = msg.decode('utf-8')
-        print(txt)
+        if(topic == bytes(self._topic,'utf-8')):
+            txt = msg.decode('utf-8')
+            print(txt)
 
-        #if bytes(self._topic,'utf-8') == topic:
-        if(txt!=""):
-            print("test")
-            msg_id = int(txt)
-            #self.robot.waiting_list.append(msg_id)
+            #if bytes(self._topic,'utf-8') == topic:
+            if(txt!=""):
+                msg_id = int(txt)
 
-            #If the ID received is already in the waiting list, we remove it
-            if(self.isInWaitingList(msg_id)):
-                #Check if the ID to remove is the first one
-                if(self.robot.waiting_list[0] == msg_id):
-                    print("popping")
-                    self.robot.waiting_list.pop(0)
-                    
+                #If the ID received is already in the waiting list, we remove it
+                if(self.isInWaitingList(msg_id)):
+                    #Check if the ID to remove is the first one
+                    if(self.robot.waiting_list[0] == msg_id):
+                        print("popping")
+                        self.robot.waiting_list.pop(0)
+                        
+                    else:
+                        print("Error, asked to remove an ID in FIFO list that is not the first")
+                #If the ID received is not in the waiting list, we add it at the end
                 else:
-                    print("Error, asked to remove an ID in FIFO list that is not the first")
-            #If the ID received is not in the waiting list, we add it at the end
-            else:
-                self.robot.waiting_list.append(msg_id)
-                print("ajout")
-            print("id :",self.id)
-            if(self.robot.waiting_list[0] == int(self.id)):
-                print("allowing")
-                self.robot.allowed = True
+                    self.robot.waiting_list.append(msg_id)
+                    print("ajout")
+                if(len(self.robot.waiting_list) > 0):
+                    if(self.robot.waiting_list[0] == int(self.id)):
+                        print("allowing")
+                        self.robot.allowed = True
 
             
 
@@ -90,10 +89,10 @@ class subscriber(threading.Thread):
         :param robot: the current robot
         """
         threading.Thread.__init__(self)
-        self._client = MQTTClient("14",ip)
+        self._client = MQTTClient(id,ip)
         self._client.set_callback(self.getmessages)
         self._client.connect()
-        self._client.subscribe(topic)
+        self._client.subscribe(topic, qos = 1)
         self._topic = topic
         self.id = id
         self.robot = robot
@@ -105,7 +104,10 @@ class subscriber(threading.Thread):
         #self._client.publish(self._topic,'Listening')
         #brick.display.text('Listening...')
         while True:
-            self._client.check_msg()
+            try:
+                self._client.check_msg()
+            except:
+                print("error subs")
             time.sleep(1)
 
 

@@ -21,6 +21,8 @@ class publisher(threading.Thread):
         self._topic = "TR54/g3/r" + id +"/" + s
         self._msg = ""
         self._delta_time = delta_time
+        if(s =="fifo"):
+            self._topic = "TR54/g3/listFIFO"
 
     def setMessage(self, msg):
         """

@@ -1,4 +1,4 @@
-from umqtt.robust import MQTTClient
+from umqtt.simple import MQTTClient
 
 import time
 
@@ -16,8 +16,11 @@ class fifoPublisher:
         
 
     def fifoPublish(self, msg):
-        self._client.publish(self._topic, msg)
-
+        print("publish:", msg)
+        try:
+            self._client.publish(self._topic, msg, retain = false, qos = 1)
+        except:
+            print("probleme fifo pubish try catch")
     
 
 
