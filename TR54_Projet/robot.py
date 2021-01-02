@@ -4,7 +4,7 @@ from pybricks.parameters import Color
 class robot:
     """ Defines a robot with a driver component. """
 
-    def __init__(self, controller_component, driver_component, id, init_map_location=0):
+    def __init__(self, controller_component, driver_component, id, init_map_location=0,angle_treshold=5):
         """
         Initializes the robot with the given controller and components.
         :param controller_component: the controller component that controls wheel motors
@@ -17,11 +17,13 @@ class robot:
 
         #variables pour localiser le robot
         #self._map = [['A',0],['B',1],['C',0],['D',2],['E',0],['F',2],['G',0],['H',1]]
-        self._map = [['A',90],['B',45],['C',45],['D',90],['E',45],['F',90],['G',45],['H',90]]
+        #self._map = [['A',90],['B',45],['C',45],['D',90],['E',45],['F',90],['G',45],['H',90]]
+        self._map = [['A',0],['B',45],['C',130],['D',85],['E',0],['F',-45],['G',-130],['H',-85]]
         self.map_location = init_map_location
         self.action = self._map[self.map_location][1]
         self._controller.action = self.action
         self._recorded_angle = 0
+        self._angle_treshold = angle_treshold
 
         #variables pour la gestion des messages MQTT
         self.allowed = True
@@ -91,10 +93,24 @@ class robot:
             #     else:
             #         print("wrong action predicted, not forwarded to map location")
             # print(self._controller.current_angle - self._recorded_angle)
-            if(abs(self._controller.current_angle - self._recorded_angle) > self._map[self.map_location][1]):
-                self._recorded_angle = self._controller.current_angle
-                self.map_location = (self.map_location+1)%len(self._map)
-                print(self._map[self.map_location][0])
+
+            # if(abs(self._controller.current_angle - self._recorded_angle) > self._map[self.map_location][1]):
+            #     self._recorded_angle = self._controller.current_angle
+            #     self.map_location = (self.map_location+1)%len(self._map)
+            #     print(self._map[self.map_location][0])
+
+            if(self._map[(self.map_location+1)%len(self._map)][1]-self._map[self.map_location][1]>=0):
+	            if(self._controller.current_angle>=self._map[(self.map_location+1)%len(self._map)][1]-self._angle_treshold):
+	                self._recorded_angle = self._controller.current_angle
+	                #print("new_recorded_angle=",self._recorded_angle)
+	                self.map_location = (self.map_location+1)%len(self._map)
+	                #print(self._map[self.map_location][0])
+	        elif(self._map[(self.map_location+1)%len(self._map)][1]-self._map[self.map_location][1]<0):
+	            if(self._controller.current_angle<=self._map[(self.map_location+1)%len(self._map)][1]+self._angle_treshold):
+	                self._recorded_angle = self._controller.current_angle
+	                #print("new_recorded_angle=",self._recorded_angle)
+	                self.map_location = (self.map_location+1)%len(self._map)
+	                #print(self._map[self.map_location][0])
                 
                 
 
